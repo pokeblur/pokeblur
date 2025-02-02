@@ -1,6 +1,6 @@
-# PokeBlur - Pokémon Guessing Game
+# PokeBlur - Juego de Adivinanza de Pokémon
 
-<img src="https://i.ibb.co/wr4cKbZ7/image.png" />
+![PokeBlur](https://i.ibb.co/wr4cKbZ7/image.png)
 
 ## Descripción
 **PokeBlur** es un juego interactivo donde el jugador debe adivinar el Pokémon que se encuentra en una imagen borrosa. Con cada intento incorrecto, la imagen se va haciendo más clara y el jugador tiene más oportunidades de acertar.
@@ -29,4 +29,3 @@
 
 ## Repositorio de GitHub
 - [PokeBlur GitHub Repo](https://github.com/tu-usuario/pokeblur)
-

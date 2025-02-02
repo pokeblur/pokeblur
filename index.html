@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivina el Pokémon</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="pokédex-container">
+        <!-- Logo de Pokédex -->
+        <div class="pokédex-logo">
+            <img src="https://i.ibb.co/q3QdVn43/Api-Base64-2025-02-02-T22-29-22-343.png" alt="Pokédex Logo" class="logo">
+        </div>
+        <h1>Adivina el Pokémon</h1>
+        <div class="pokédex">
+            <div class="pokemon-info">
+                <h2>Pokédex</h2>
+                <div class="card">
+                    <img id="pokemon-image" class="pokemon-img" src="" alt="Pokémon">
+                </div>
+                <p id="message" class="status-message"></p>
+            </div>
+            <div class="guess-section">
+                <h3>Selecciona un Pokémon</h3>
+                <select id="pokemon-list" class="pokemon-select">
+                    <option value="">Selecciona un Pokémon</option>
+                </select>
+                <button id="guess-button" class="guess-button">Adivinar</button>
+                <button id="reset-button" class="reset-button">Reiniciar</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

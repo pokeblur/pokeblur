@@ -22,10 +22,4 @@
 3. Si te equivocas, la imagen del Pokémon se hará más clara.
 4. Sigue adivinando hasta que aciertes o reinicies el juego.
 
-## Agradecimientos
-- Gracias a [PokeAPI](https://pokeapi.co/) por proporcionarnos los datos de los Pokémon.
-- Gracias a [NES.css](https://nostalgic-css.github.io/NES.css/) por su increíble biblioteca de UI que aporta una estética retro al juego.
-- Imagen del Pokémon proporcionada por [Pokémon Database](https://pokemondb.net/pokedex/national).
 
-## Repositorio de GitHub
-- [PokeBlur GitHub Repo](https://github.com/tu-usuario/pokeblur)

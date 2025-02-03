@@ -55,11 +55,11 @@ function updateBlur() {
 function checkGuess() {
     const selectedPokemon = document.getElementById('pokemon-list').value;
     if (selectedPokemon === currentPokemon) {
-        document.getElementById('message').textContent = "¡Correcto! Has adivinado el Pokémon.";
+        document.getElementById('message').textContent = "¡Correcto✅! Has adivinado el Pokémon.";
         blurLevel = 0;  // Si acierta, no hay desenfoque
         incorrectAttempts = 0; // Resetear intentos incorrectos
     } else {
-        document.getElementById('message').textContent = "¡Incorrecto! Intenta nuevamente.";
+        document.getElementById('message').textContent = "¡Incorrecto❌! Intenta nuevamente.";
         incorrectAttempts++;
         blurLevel = Math.max(20 - incorrectAttempts * 5, 0); // Disminuir el desenfoque con cada intento incorrecto, pero no menos de 0
     }

@@ -25,7 +25,8 @@ const pokemonList = [
 
 let currentPokemon = '';
 let blurLevel = 20;
-let incorrectAttempts = 0; // Variable para contar los intentos incorrectos
+let incorrectAttempts = 0;
+let selectedPokemon = ''; // Variable para almacenar el Pokémon seleccionado
 
 function getRandomPokemon() {
     return pokemonList[Math.floor(Math.random() * pokemonList.length)];
@@ -36,14 +37,25 @@ function loadPokemonImage(pokemon) {
     document.getElementById('pokemon-image').src = imageUrl;
 }
 
-// Cargar lista de Pokémon en el selector
-function loadPokemonSelect() {
-    const pokemonSelect = document.getElementById('pokemon-list');
-    pokemonList.forEach(pokemon => {
-        const option = document.createElement('option');
-        option.value = pokemon;
-        option.textContent = pokemon;
-        pokemonSelect.appendChild(option);
+// Función para mostrar los resultados de búsqueda
+function showSearchResults(filter = '') {
+    const searchResults = document.getElementById('search-results');
+    searchResults.innerHTML = ''; // Limpiar resultados anteriores
+
+    const filteredPokemon = pokemonList.filter(pokemon =>
+        pokemon.toLowerCase().includes(filter.toLowerCase())
+    );
+
+    filteredPokemon.forEach(pokemon => {
+        const resultItem = document.createElement('div');
+        resultItem.textContent = pokemon;
+        resultItem.addEventListener('click', () => {
+            selectedPokemon = pokemon; // Almacenar el Pokémon seleccionado
+            document.getElementById('search-input').value = pokemon; // Mostrar el nombre en el campo de búsqueda
+            document.getElementById('guess-button').disabled = false; // Habilitar el botón "Adivinar"
+            searchResults.innerHTML = ''; // Limpiar resultados después de seleccionar
+        });
+        searchResults.appendChild(resultItem);
     });
 }
 
@@ -52,16 +64,28 @@ function updateBlur() {
     image.style.filter = `blur(${blurLevel}px)`;
 }
 
+function showSuccessMessage() {
+    const successMessage = document.getElementById('success-message');
+    successMessage.textContent = "¡Adivinaste! 🎉"; // Mensaje de éxito
+    successMessage.style.display = 'block'; // Mostrar el mensaje
+
+    // Ocultar el mensaje después de 3 segundos
+    setTimeout(() => {
+        successMessage.style.display = 'none';
+        resetGame(); // Reiniciar el juego después de ocultar el mensaje
+    }, 3000); // 3 segundos
+}
+
 function checkGuess() {
-    const selectedPokemon = document.getElementById('pokemon-list').value;
     if (selectedPokemon === currentPokemon) {
         document.getElementById('message').textContent = "¡Correcto✅! Has adivinado el Pokémon.";
-        blurLevel = 0;  // Si acierta, no hay desenfoque
-        incorrectAttempts = 0; // Resetear intentos incorrectos
+        blurLevel = 0;
+        incorrectAttempts = 0;
+        showSuccessMessage(); // Mostrar el mensaje de éxito
     } else {
         document.getElementById('message').textContent = "¡Incorrecto❌! Intenta nuevamente.";
         incorrectAttempts++;
-        blurLevel = Math.max(20 - incorrectAttempts * 5, 0); // Disminuir el desenfoque con cada intento incorrecto, pero no menos de 0
+        blurLevel = Math.max(20 - incorrectAttempts * 5, 0);
     }
     updateBlur();
 }
@@ -69,20 +93,30 @@ function checkGuess() {
 function resetGame() {
     currentPokemon = getRandomPokemon();
     loadPokemonImage(currentPokemon);
-    document.getElementById('pokemon-list').value = ''; // Restablecer la selección
-    document.getElementById('message').textContent = ''; // Limpiar mensaje
-    blurLevel = 20; // Restaurar desenfoque
-    incorrectAttempts = 0; // Restablecer intentos incorrectos
+    document.getElementById('message').textContent = '';
+    document.getElementById('guess-button').disabled = true; // Deshabilitar el botón "Adivinar"
+    document.getElementById('search-input').value = ''; // Limpiar el campo de búsqueda
+    blurLevel = 20;
+    incorrectAttempts = 0;
+    selectedPokemon = ''; // Reiniciar la selección
     updateBlur();
 }
 
 // Inicializar el juego
 document.addEventListener('DOMContentLoaded', () => {
-    loadPokemonSelect();
     currentPokemon = getRandomPokemon();
     loadPokemonImage(currentPokemon);
     updateBlur();
-    
+
     document.getElementById('guess-button').addEventListener('click', checkGuess);
     document.getElementById('reset-button').addEventListener('click', resetGame);
+
+    // Evento de búsqueda dinámica
+    document.getElementById('search-input').addEventListener('input', (event) => {
+        const searchTerm = event.target.value;
+        showSearchResults(searchTerm); // Mostrar resultados filtrados
+    });
+
+    // Deshabilitar el botón "Adivinar" inicialmente
+    document.getElementById('guess-button').disabled = true;
 });

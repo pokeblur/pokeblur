@@ -1,7 +1,10 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: white; 
-    color: black; 
+    background-image: url('https://r4.wallpaperflare.com/wallpaper/927/247/737/pokemon-nature-pikachu-charmander-wallpaper-4664237548c040be06a0d9e164fe6dd4.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,7 +14,7 @@ body {
 
 .pokédex-container {
     text-align: center;
-    background-color: white; 
+    background-color: rgba(255, 255, 255, 0.9);
     width: 90%;
     max-width: 900px;
     padding: 30px;
@@ -28,10 +31,16 @@ h1 {
 .pokédex-logo {
     text-align: center;
     margin-bottom: 20px;
+    margin-top: 20px; /* Añade un margen superior */
 }
 
+/* Logo más grande */
 .logo {
-    width: 150px; 
+    width: 400px; /* Aumenta el tamaño del logo */
+    height: auto;
+    border: 5px solid #ffcc00; /* Borde amarillo */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra */
 }
 
 .pokédex {
@@ -44,7 +53,7 @@ h1 {
 
 .pokemon-info {
     flex: 1;
-    background-color: white; 
+    background-color: white;
     border-radius: 10px;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -61,9 +70,9 @@ h1 {
     width: 100%;
     max-width: 250px;
     border-radius: 10px;
-    filter: blur(20px); 
+    filter: blur(20px);
     transition: filter 0.3s;
-    pointer-events: none; /* Deshabilita la interacción con la imagen */
+    pointer-events: none;
 }
 
 .pokemon-img-overlay {
@@ -72,44 +81,93 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.8); /* Capa bloqueadora */
+    background-color: rgba(255, 255, 255, 0.8);
     border-radius: 10px;
-    pointer-events: none; /* Impide la interacción con la capa */
+    pointer-events: none;
 }
 
 .guess-section {
     flex: 1;
-    background-color: white; 
+    background-color: white;
     border-radius: 10px;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 35%;
 }
 
-select, button {
+/* Estilos para el campo de búsqueda */
+.search-input {
     padding: 10px;
     font-size: 16px;
     margin: 10px;
     border-radius: 5px;
     border: 1px solid #ddd;
     width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
 }
 
-button {
-    background-color: #f1f1f1; 
-    color: black; 
-    border: none;
+.search-input:focus {
+    border-color: #ffcc00;
+    outline: none;
+}
+
+/* Estilos para los resultados de búsqueda */
+.search-results {
+    max-height: 150px;
+    overflow-y: auto;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-results div {
+    padding: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #ccc;
+.search-results div:hover {
+    background-color: #f1f1f1;
 }
 
+/* Estilos para los botones */
+button {
+    padding: 15px; /* Botones más grandes */
+    font-size: 18px; /* Texto más grande */
+    margin: 10px;
+    border-radius: 10px; /* Bordes más redondeados */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+/* Botón "Adivinar" en verde */
+.guess-button {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+}
+
+.guess-button:hover {
+    background-color: #45a049; /* Verde más oscuro al pasar el mouse */
+}
+
+.guess-button:disabled {
+    background-color: #a5d6a7; /* Verde claro cuando está deshabilitado */
+    cursor: not-allowed;
+}
+
+/* Botón "Reiniciar" en rojo */
 .reset-button {
-    background-color: #ffcc00; 
-    color: black;
+    background-color: #f44336; /* Rojo */
+    color: white;
+}
+
+.reset-button:hover {
+    background-color: #e53935; /* Rojo más oscuro al pasar el mouse */
 }
 
 .status-message {
@@ -118,8 +176,43 @@ button:hover {
 }
 
 option {
-    padding: 5px; 
-.pokédex-logo .logo {
-    width: 500px; /* Tamaño más grande */
-    height: auto; /* Mantener la proporción del logo */
+    padding: 5px;
+}
+
+/* Mensaje de éxito */
+.success-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px; /* Texto grande */
+    font-weight: bold;
+    color: #4CAF50; /* Color verde */
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none; /* Oculto por defecto */
+    animation: fadeInOut 3s ease-in-out; /* Animación de 3 segundos */
+}
+
+/* Animación para el mensaje de éxito */
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
 }

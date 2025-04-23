@@ -1,39 +1,604 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adivina el Pokémon</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Cotizaciones</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7e6f7; /* Fondo lila pastel */
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #8e44ad;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #8e44ad;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background-color: #732d91;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .product-row:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .preview-container {
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f8f2fc;
+    }
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .preview-header img {
+      max-height: 100px;
+    }
+    .company-info {
+      text-align: right;
+    }
+    .preview-title {
+      text-align: center;
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    #fileContent {
+      display: none;
+    }
+    .product-table {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .selected-products {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .product-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      padding: 5px;
+      border-bottom: 1px solid #eee;
+    }
+    .remove-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+    .remove-btn:hover {
+      background-color: #c0392b;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 10px 20px;
+      background-color: #ddd;
+      cursor: pointer;
+      border-radius: 5px 5px 0 0;
+      margin-right: 5px;
+    }
+    .tab.active {
+      background-color: #8e44ad;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    #cotizacionPreview {
+      background-color: white;
+      padding: 20px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="pokédex-container">
-        <!-- Logo de Pokédex -->
-        <div class="pokédex-logo">
-            <img src="https://i.ibb.co/6kLb6jZ/Api-Base64-2025-03-04-T20-15-11-949-1-3.png alt="Pokédex Logo" class="logo">
-        </div>
-        <h1>Adivina el Pokémon</h1>
-        <div class="pokédex">
-            <div class="pokemon-info">
-                <h2>Pokédex</h2>
-                <div class="card">
-                    <img id="pokemon-image" class="pokemon-img" src="" alt="Pokémon">
-                </div>
-                <p id="message" class="status-message"></p>
-            </div>
-            <div class="guess-section">
-                <h3>Busca un Pokémon</h3>
-                <!-- Campo de búsqueda -->
-                <input type="text" id="search-input" class="search-input" placeholder="Escribe el nombre de un Pokémon...">
-                <!-- Contenedor para los resultados de búsqueda -->
-                <div id="search-results" class="search-results"></div>
-                <button id="guess-button" class="guess-button" disabled>Adivinar</button>
-                <button id="reset-button" class="reset-button">Reiniciar</button>
-            </div>
-        </div>
-        <!-- Mensaje de éxito -->
-        <div id="success-message" class="success-message"></div>
+  <div class="container">
+    <h1>Generador de Cotizaciones</h1>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('formTab')">Formulario</div>
+      <div class="tab" onclick="showTab('previewTab')">Vista Previa</div>
     </div>
-    <script src="script.js"></script>
+    
+    <div id="formTab" class="tab-content active">
+      <div class="form-group">
+        <label for="rutCliente">RUT del Cliente:</label>
+        <input type="text" id="rutCliente" placeholder="12.345.678-9">
+      </div>
+      
+      <div class="form-group">
+        <label for="nombreEmpresa">Nombre de la Empresa:</label>
+        <input type="text" id="nombreEmpresa">
+      </div>
+      
+      <div class="form-group">
+        <label for="nombreSolicitante">Nombre del Solicitante:</label>
+        <input type="text" id="nombreSolicitante">
+      </div>
+      
+      <div class="form-group">
+        <label for="correoSolicitante">Correo del Solicitante:</label>
+        <input type="email" id="correoSolicitante">
+      </div>
+      
+      <div class="form-group">
+        <label for="fechaCotizacion">Fecha de la Cotización:</label>
+        <input type="date" id="fechaCotizacion">
+      </div>
+      
+      <div class="form-group">
+        <label for="numeroCotizacion">Número de Cotización:</label>
+        <input type="text" id="numeroCotizacion" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="productoFile">Seleccionar archivo de productos (.txt):</label>
+        <input type="file" id="productoFile" accept=".txt">
+      </div>
+      
+      <div id="fileContent"></div>
+      
+      <div class="product-table">
+        <h3>Productos Disponibles:</h3>
+        <table id="productosDisponibles">
+          <thead>
+            <tr>
+              <th>Nombre del Producto</th>
+              <th>Precio</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Los productos se cargarán aquí -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="selected-products">
+        <h3>Productos Seleccionados:</h3>
+        <table id="productosSeleccionados">
+          <thead>
+            <tr>
+              <th>Nombre del Producto</th>
+              <th>Precio Unitario</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+              <th>IVA (19%)</th>
+              <th>Total</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Los productos seleccionados se mostrarán aquí -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="actions">
+        <button onclick="generarVistaPrevia()">Generar Vista Previa</button>
+      </div>
+    </div>
+    
+    <div id="previewTab" class="tab-content">
+      <div id="cotizacionPreview"></div>
+      
+      <div class="actions">
+        <button onclick="generarPDF()">Descargar como PDF</button>
+        <button onclick="generarJPG()">Descargar como JPG</button>
+        <button onclick="showTab('formTab')">Volver al Formulario</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Generar número de cotización aleatorio al cargar la página
+    window.onload = function() {
+      const numeroCotizacion = 'COT-' + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('numeroCotizacion').value = numeroCotizacion;
+      
+      // Establecer la fecha actual por defecto
+      const hoy = new Date();
+      const fechaFormateada = hoy.toISOString().split('T')[0];
+      document.getElementById('fechaCotizacion').value = fechaFormateada;
+    };
+    
+    // Variables globales
+    let productosDisponibles = [];
+    let productosSeleccionados = [];
+    
+    // Cargar archivo de productos
+    document.getElementById('productoFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const contenido = e.target.result;
+        procesarArchivoProductos(contenido);
+      };
+      reader.readAsText(file);
+    });
+    
+    // Procesar el archivo de productos
+    function procesarArchivoProductos(contenido) {
+      productosDisponibles = [];
+      const lineas = contenido.split('\n');
+      
+      lineas.forEach(linea => {
+        if (linea.trim() !== '') {
+          const partes = linea.split(',');
+          if (partes.length >= 2) {
+            const nombre = partes[0].trim();
+            const precio = parseFloat(partes[1].trim());
+            
+            if (!isNaN(precio)) {
+              productosDisponibles.push({
+                nombre: nombre,
+                precio: precio
+              });
+            }
+          }
+        }
+      });
+      
+      mostrarProductosDisponibles();
+    }
+    
+    // Mostrar los productos disponibles en la tabla
+    function mostrarProductosDisponibles() {
+      const tabla = document.getElementById('productosDisponibles').getElementsByTagName('tbody')[0];
+      tabla.innerHTML = '';
+      
+      productosDisponibles.forEach((producto, index) => {
+        const fila = tabla.insertRow();
+        fila.className = 'product-row';
+        
+        const celdaNombre = fila.insertCell(0);
+        celdaNombre.textContent = producto.nombre;
+        
+        const celdaPrecio = fila.insertCell(1);
+        celdaPrecio.textContent = '$' + producto.precio.toLocaleString('es-CL');
+        
+        const celdaAccion = fila.insertCell(2);
+        const btnAgregar = document.createElement('button');
+        btnAgregar.textContent = 'Agregar';
+        btnAgregar.onclick = function() {
+          agregarProducto(index);
+        };
+        celdaAccion.appendChild(btnAgregar);
+      });
+    }
+    
+    // Agregar un producto a la lista de seleccionados
+    function agregarProducto(index) {
+      const producto = productosDisponibles[index];
+      const cantidad = 1; // Por defecto
+      
+      const productoSeleccionado = {
+        nombre: producto.nombre,
+        precio: producto.precio,
+        cantidad: cantidad,
+        subtotal: producto.precio * cantidad,
+        iva: producto.precio * cantidad * 0.19,
+        total: producto.precio * cantidad * 1.19
+      };
+      
+      productosSeleccionados.push(productoSeleccionado);
+      actualizarTablaProductosSeleccionados();
+    }
+    
+    // Actualizar la tabla de productos seleccionados
+    function actualizarTablaProductosSeleccionados() {
+      const tabla = document.getElementById('productosSeleccionados').getElementsByTagName('tbody')[0];
+      tabla.innerHTML = '';
+      
+      productosSeleccionados.forEach((producto, index) => {
+        const fila = tabla.insertRow();
+        
+        fila.insertCell(0).textContent = producto.nombre;
+        fila.insertCell(1).textContent = '$' + producto.precio.toLocaleString('es-CL');
+        
+        const celdaCantidad = fila.insertCell(2);
+        const inputCantidad = document.createElement('input');
+        inputCantidad.type = 'number';
+        inputCantidad.min = 1;
+        inputCantidad.value = producto.cantidad;
+        inputCantidad.style.width = '60px';
+        inputCantidad.onchange = function() {
+          actualizarCantidadProducto(index, parseInt(this.value));
+        };
+        celdaCantidad.appendChild(inputCantidad);
+        
+        fila.insertCell(3).textContent = '$' + producto.subtotal.toLocaleString('es-CL');
+        fila.insertCell(4).textContent = '$' + producto.iva.toLocaleString('es-CL');
+        fila.insertCell(5).textContent = '$' + producto.total.toLocaleString('es-CL');
+        
+        const celdaAccion = fila.insertCell(6);
+        const btnEliminar = document.createElement('button');
+        btnEliminar.className = 'remove-btn';
+        btnEliminar.textContent = 'Eliminar';
+        btnEliminar.onclick = function() {
+          eliminarProducto(index);
+        };
+        celdaAccion.appendChild(btnEliminar);
+      });
+    }
+    
+    // Actualizar la cantidad de un producto seleccionado
+    function actualizarCantidadProducto(index, cantidad) {
+      if (cantidad < 1) cantidad = 1;
+      
+      productosSeleccionados[index].cantidad = cantidad;
+      productosSeleccionados[index].subtotal = productosSeleccionados[index].precio * cantidad;
+      productosSeleccionados[index].iva = productosSeleccionados[index].subtotal * 0.19;
+      productosSeleccionados[index].total = productosSeleccionados[index].subtotal * 1.19;
+      
+      actualizarTablaProductosSeleccionados();
+    }
+    
+    // Eliminar un producto de la lista de seleccionados
+    function eliminarProducto(index) {
+      productosSeleccionados.splice(index, 1);
+      actualizarTablaProductosSeleccionados();
+    }
+    
+    // Mostrar pestaña
+    function showTab(tabId) {
+      // Ocultar todas las pestañas
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Desactivar todos los botones de pestaña
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Mostrar la pestaña seleccionada
+      document.getElementById(tabId).classList.add('active');
+      
+      // Activar el botón de la pestaña correspondiente
+      document.querySelectorAll('.tab').forEach(tab => {
+        if (tab.getAttribute('onclick').includes(tabId)) {
+          tab.classList.add('active');
+        }
+      });
+      
+      // Si estamos mostrando la vista previa, generarla
+      if (tabId === 'previewTab') {
+        generarVistaPrevia();
+      }
+    }
+    
+    // Generar vista previa de la cotización
+    function generarVistaPrevia() {
+      const rutCliente = document.getElementById('rutCliente').value;
+      const nombreEmpresa = document.getElementById('nombreEmpresa').value;
+      const nombreSolicitante = document.getElementById('nombreSolicitante').value;
+      const correoSolicitante = document.getElementById('correoSolicitante').value;
+      const fechaCotizacion = document.getElementById('fechaCotizacion').value;
+      const numeroCotizacion = document.getElementById('numeroCotizacion').value;
+      
+      // Validar datos básicos
+      if (!rutCliente || !nombreEmpresa || !nombreSolicitante || !correoSolicitante || !fechaCotizacion) {
+        alert('Por favor, complete todos los campos del cliente y fecha de cotización.');
+        return;
+      }
+      
+      // Validar que haya productos seleccionados
+      if (productosSeleccionados.length === 0) {
+        alert('Por favor, seleccione al menos un producto.');
+        return;
+      }
+      
+      // Calcular totales
+      let subtotalGeneral = 0;
+      let ivaGeneral = 0;
+      let totalGeneral = 0;
+      
+      productosSeleccionados.forEach(producto => {
+        subtotalGeneral += producto.subtotal;
+        ivaGeneral += producto.iva;
+        totalGeneral += producto.total;
+      });
+      
+      // Formatear fecha
+      const fechaFormateada = new Date(fechaCotizacion).toLocaleDateString('es-CL');
+      
+      // Generar la vista previa
+      const previewContainer = document.getElementById('cotizacionPreview');
+      
+      // Convertir fecha string a objeto Date
+      const fechaCotizacionObj = new Date(fechaCotizacion);
+      
+      // Calcular fecha de validez (7 días después)
+      const fechaValidez = new Date(fechaCotizacionObj);
+      fechaValidez.setDate(fechaValidez.getDate() + 7);
+      const fechaValidezFormateada = fechaValidez.toLocaleDateString('es-CL');
+      
+      previewContainer.innerHTML = `
+        <div style="background-color: #f7e6f7; padding: 20px;">
+          <div style="background-color: white; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <div>
+                <img src="https://i.ibb.co/Sw9DD9m6/pifany-Mesa-de-trabajo-1.png" alt="Logo de la empresa" style="max-height: 200px;">
+              </div>
+              <div style="text-align: right;">
+                <h3>Datos de Contacto</h3>
+                <p>Teléfono: +56984103412</p>
+                <p>Correo: piifanii.18@gmail.com</p>
+              </div>
+            </div>
+            
+            <h2 style="text-align: center;">COTIZACIÓN N° ${numeroCotizacion}</h2>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+              <div>
+                <h3>Datos del Cliente</h3>
+                <p><strong>RUT:</strong> ${rutCliente}</p>
+                <p><strong>Empresa:</strong> ${nombreEmpresa}</p>
+                <p><strong>Solicitante:</strong> ${nombreSolicitante}</p>
+                <p><strong>Correo:</strong> ${correoSolicitante}</p>
+              </div>
+              <div>
+                <h3>Datos de la Cotización</h3>
+                <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+                <p><strong>Válida hasta:</strong> ${fechaValidezFormateada}</p>
+              </div>
+            </div>
+            
+            <h3>Detalle de Productos</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background-color: #f2f2f2;">
+                  <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Descripción</th>
+                  <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">Precio Unitario</th>
+                  <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Cantidad</th>
+                  <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">Subtotal</th>
+                  <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">IVA (19%)</th>
+                  <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${productosSeleccionados.map(producto => `
+                  <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px;">${producto.nombre}</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">$${producto.precio.toLocaleString('es-CL')}</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: center;">${producto.cantidad}</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">$${producto.subtotal.toLocaleString('es-CL')}</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">$${producto.iva.toLocaleString('es-CL')}</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">$${producto.total.toLocaleString('es-CL')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" style="border: 1px solid #ddd; padding: 10px; text-align: right;"><strong>Totales:</strong></td>
+                  <td style="border: 1px solid #ddd; padding: 10px; text-align: right;"><strong>$${subtotalGeneral.toLocaleString('es-CL')}</strong></td>
+                  <td style="border: 1px solid #ddd; padding: 10px; text-align: right;"><strong>$${ivaGeneral.toLocaleString('es-CL')}</strong></td>
+                  <td style="border: 1px solid #ddd; padding: 10px; text-align: right;"><strong>$${totalGeneral.toLocaleString('es-CL')}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+            
+            <div style="margin-top: 30px;">
+              <p><strong>Nota:</strong> Esta cotización es válida por 7 días a partir de la fecha de emisión.</p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Mostrar la pestaña de vista previa
+      showTab('previewTab');
+    }
+    
+    // Generar PDF
+    function generarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+      
+      // Obtener contenido de la vista previa
+      const element = document.getElementById('cotizacionPreview');
+      
+      // Usar html2canvas para capturar el contenido como imagen
+      html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const imgProps = doc.getImageProperties(imgData);
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        doc.save(`Cotizacion_${document.getElementById('numeroCotizacion').value}.pdf`);
+      });
+    }
+    
+    // Generar JPG
+    function generarJPG() {
+      const element = document.getElementById('cotizacionPreview');
+      
+      html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = `Cotizacion_${document.getElementById('numeroCotizacion').value}.jpg`;
+        link.click();
+      });
+    }
+  </script>
 </body>
 </html>
